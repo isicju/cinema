@@ -1,3 +1,3 @@
 # cinema
 pishem govnokodik
-David
+David.
