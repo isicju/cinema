@@ -1,5 +1,11 @@
-package com.vkatit.cinema.service.ticket;
+package com.vkatit.cinema.service;
 
+import com.vkatit.cinema.model.Ticket;
+import org.springframework.stereotype.Service;
+
+@Service
 public interface Printable {
-    byte[] getTicket(String ticketName);
+
+    byte[] getTicket(Ticket ticket);
+
 }
