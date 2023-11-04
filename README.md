@@ -1,6 +1,7 @@
 # cinema
 pishem govnokodik
 Anatoly
-David.
+David
 Vasily
 Daniil
+Dima
