@@ -17,7 +17,7 @@ public class IndexPageTest {
 
     @Test
     public void testIndexPage() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/index.html"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }
