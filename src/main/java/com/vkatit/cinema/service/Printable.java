@@ -6,6 +6,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface Printable {
 
-    byte[] getTicket(Ticket ticket);
+    byte[] print(Ticket ticket);
 
 }

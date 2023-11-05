@@ -14,7 +14,7 @@ import java.io.IOException;
 public class PdfToImageServiceTest {
 
     public static void convertPdfToJpeg() throws IOException {
-        String fileName = "Ticket-123";
+        String fileName = "ticketid";
         String pdfFilePath = "src/main/resources/" + fileName + ".pdf";
         String outputDirectory = "src/main/resources";
         try (PDDocument document = PDDocument.load(new File(pdfFilePath))) {

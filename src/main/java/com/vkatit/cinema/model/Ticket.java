@@ -8,40 +8,102 @@ import java.time.LocalTime;
 @Component
 public class Ticket {
 
-    int id;
-    byte seat;
-    String movie;
-    LocalDate date;
-    LocalTime time;
-    String firstName;
-    String lastName;
+    private int id;
+    private byte seat;
+    private String movie;
+    private LocalDate date;
+    private LocalTime time;
+    private String firstName;
+    private String lastName;
 
-    public void setId(int id) {
-        this.id = id;
+    private Ticket() {
     }
 
-    public void setSeat(byte seat) {
-        this.seat = seat;
+    public static class TicketBuilder {
+
+        private int idBuilder;
+        private byte seatBuilder;
+        private String movieBuilder;
+        private LocalDate dateBuilder;
+        private LocalTime timeBuilder;
+        private String firstNameBuilder;
+        private String lastNameBuilder;
+
+        public TicketBuilder setId(int idBuilder) {
+            this.idBuilder = idBuilder;
+            return this;
+        }
+
+        public TicketBuilder setSeat(byte seatBuilder) {
+            this.seatBuilder = seatBuilder;
+            return this;
+        }
+
+        public TicketBuilder setMovie(String movieBuilder) {
+            this.movieBuilder = movieBuilder;
+            return this;
+        }
+
+        public TicketBuilder setDate(LocalDate dateBuilder) {
+            this.dateBuilder = dateBuilder;
+            return this;
+        }
+
+        public TicketBuilder setTime(LocalTime timeBuilder) {
+            this.timeBuilder = timeBuilder;
+            return this;
+        }
+
+        public TicketBuilder setFirstName(String firstNameBuilder) {
+            this.firstNameBuilder = firstNameBuilder;
+            return this;
+        }
+
+        public TicketBuilder setLastName(String lastNameBuilder) {
+            this.lastNameBuilder = lastNameBuilder;
+            return this;
+        }
+
+        public Ticket build() {
+            Ticket ticket = new Ticket();
+            ticket.id = this.idBuilder;
+            ticket.seat = this.seatBuilder;
+            ticket.movie = this.movieBuilder;
+            ticket.date = this.dateBuilder;
+            ticket.time = this.timeBuilder;
+            ticket.firstName = this.firstNameBuilder;
+            ticket.lastName = this.lastNameBuilder;
+            return ticket;
+        }
+
     }
 
-    public void setMovie(String movie) {
-        this.movie = movie;
+    public int getId() {
+        return id;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public byte getSeat() {
+        return seat;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public String getMovie() {
+        return movie;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public LocalDate getDate() {
+        return date;
     }
 
-    public void setTime(LocalTime time) {
-        this.time = time;
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 
 }
