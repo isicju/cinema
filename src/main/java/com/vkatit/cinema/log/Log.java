@@ -12,14 +12,12 @@ import java.util.logging.Logger;
 import java.util.logging.FileHandler;
 import java.util.logging.SimpleFormatter;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Component
 public class Log {
 
     @Value("${log.path}")
     private String PATH;
-
     private static final Logger logger = Logger.getLogger(Log.class.getName());
 
     public void logging(Level level, String message, Throwable throwable) {
@@ -32,18 +30,12 @@ public class Log {
     }
 
     private String getLogFileName(Level level) {
-        PATH = "src/main/resources/log/";
-        String fileName = PATH + getCurrentDate() + (level == Level.SEVERE ? "-error.log" : "-info.log");
-        System.out.println("PATH = " + PATH);
-        System.out.println("fileName = " + fileName);
+        String fileName = PATH + LocalDate.now() + (level == Level.SEVERE ? "-error.log" : "-info.log");
         File logFile = new File(fileName);
+        logFile.getParentFile().mkdirs();
         if (!logFile.exists()) {
             try {
-                if (logFile.createNewFile()) {
-                    System.out.println("File created: " + fileName);
-                } else {
-                    System.err.println("File creation failed: " + fileName);
-                }
+                logFile.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -70,12 +62,6 @@ public class Log {
             return sw.toString();
         }
         return "";
-    }
-
-    private String getCurrentDate() {
-        LocalDate currentDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return currentDate.format(formatter);
     }
 
 }
