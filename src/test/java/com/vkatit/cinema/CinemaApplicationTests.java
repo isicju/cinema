@@ -105,7 +105,7 @@ class CinemaApplicationTests {
         assertTrue(lines.stream().anyMatch(line -> line.contains(message)));
     }
 
-    void timeForLoggerToWriteLog() {
+    private void timeForLoggerToWriteLog() {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
