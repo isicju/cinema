@@ -1,21 +1,21 @@
 package com.vkatit.cinema;
 
-import com.vkatit.cinema.log.Log;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
-import java.io.*;
 import java.time.LocalDate;
-import java.util.logging.Level;
 
-import java.nio.file.FileSystems;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,12 +25,18 @@ class CinemaApplicationTests {
 
     @Autowired
     ApplicationContext context;
-
-    @Autowired
-    private Log log;
-
     @Value("${log.path}")
-    private String PATH;
+    private String LOG_PATH;
+
+    private final Logger LOGGER = LogManager.getLogger(CinemaApplication.class);
+    private final String TRACE_LEVEL = "TRACE";
+    private final String DEBUG_LEVEL = "DEBUG";
+    private final String INFO_LEVEL = "INFO";
+    private final String WARN_LEVEL = "WARN";
+    private final String ERROR_LEVEL = "ERROR";
+    private final String FATAL_LEVEL = "FATAL";
+    private final String LOG_FILE_INFO = "-info.log";
+    private final String LOG_FILE_ERROR = "-error.log";
 
     @Test
     void contextLoads() {
@@ -39,44 +45,76 @@ class CinemaApplicationTests {
 
     @Test
     @DirtiesContext
-    public void loggingInfo() {
-        Level level = Level.INFO;
-        String message = "INFO logger test";
-        log.logging(level, message, null);
-        comparisonFileNameAndMessage(level, message);
+    void traceLog() {
+        String logLevel = TRACE_LEVEL;
+        LOGGER.trace(message(logLevel));
+        comparison(logLevel, message(logLevel));
     }
 
     @Test
-    public void loggingError() {
-        String message = "SEVERE logger test";
-        Level level = Level.SEVERE;
-        try {
-            throw new RuntimeException("Exception from Try block");
-        } catch (Exception e) {
-            log.logging(level, message, e);
-        }
-        comparisonFileNameAndMessage(level, message);
+    @DirtiesContext
+    void debugLog() {
+        String logLevel = DEBUG_LEVEL;
+        LOGGER.debug(message(logLevel));
+        comparison(logLevel, message(logLevel));
     }
 
-    public void comparisonFileNameAndMessage(Level expectedLevel, String expectedMessage) {
-        LocalDate currentDate = LocalDate.now();
-        String expectedFileName = PATH + currentDate + (expectedLevel == Level.SEVERE ? "-error.log" : "-info.log");
-        assertTrue(new File(expectedFileName).exists());
-        boolean found = false;
+    @Test
+    @DirtiesContext
+    void infoLog() {
+        String logLevel = INFO_LEVEL;
+        LOGGER.info(message(logLevel));
+        comparison(logLevel, message(logLevel));
+    }
+
+    @Test
+    @DirtiesContext
+    void warnLog() {
+        String logLevel = WARN_LEVEL;
+        LOGGER.warn(message(logLevel));
+        comparison(logLevel, message(logLevel));
+    }
+
+    @Test
+    @DirtiesContext
+    void errorLog() {
+        String logLevel = ERROR_LEVEL;
+        LOGGER.error(message(logLevel));
+        comparison(logLevel, message(logLevel));
+    }
+
+    @Test
+    @DirtiesContext
+    void fatalLog() {
+        String logLevel = FATAL_LEVEL;
+        LOGGER.fatal(message(logLevel));
+        comparison(logLevel, message(logLevel));
+    }
+
+    private void comparison(String logLevel, String message) {
+        String logFile = LOG_PATH + LocalDate.now() +
+                ((logLevel.equalsIgnoreCase(ERROR_LEVEL) || logLevel.equalsIgnoreCase(FATAL_LEVEL)) ? LOG_FILE_ERROR : LOG_FILE_INFO);
+        timeForLoggerToWriteLog();
+        Path path = Paths.get(logFile);
+        List<String> lines;
         try {
-            Path path = FileSystems.getDefault().getPath(expectedFileName);
-            List<String> lines = Files.readAllLines(path);
-            for (String line : lines) {
-                if (line.contains(expectedMessage)) {
-                    found = true;
-                    System.out.println("Message \"" + expectedMessage + "\" - found");
-                    break;
-                }
-            }
-            assertTrue(found, "String \"" + expectedMessage + "\" was not found in the log file");
+            lines = Files.readAllLines(path);
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        assertTrue(lines.stream().anyMatch(line -> line.contains(message)));
+    }
+
+    void timeForLoggerToWriteLog() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private String message(String logLevel) {
+        return logLevel + " message";
     }
 
 }
