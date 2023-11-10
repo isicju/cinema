@@ -48,7 +48,7 @@ class CinemaApplicationTests {
     void traceLog() {
         String logLevel = TRACE_LEVEL;
         LOGGER.trace(message(logLevel));
-        comparison(logLevel, message(logLevel));
+        comparison(logLevel);
     }
 
     @Test
@@ -56,7 +56,7 @@ class CinemaApplicationTests {
     void debugLog() {
         String logLevel = DEBUG_LEVEL;
         LOGGER.debug(message(logLevel));
-        comparison(logLevel, message(logLevel));
+        comparison(logLevel);
     }
 
     @Test
@@ -64,7 +64,7 @@ class CinemaApplicationTests {
     void infoLog() {
         String logLevel = INFO_LEVEL;
         LOGGER.info(message(logLevel));
-        comparison(logLevel, message(logLevel));
+        comparison(logLevel);
     }
 
     @Test
@@ -72,7 +72,7 @@ class CinemaApplicationTests {
     void warnLog() {
         String logLevel = WARN_LEVEL;
         LOGGER.warn(message(logLevel));
-        comparison(logLevel, message(logLevel));
+        comparison(logLevel);
     }
 
     @Test
@@ -80,7 +80,7 @@ class CinemaApplicationTests {
     void errorLog() {
         String logLevel = ERROR_LEVEL;
         LOGGER.error(message(logLevel));
-        comparison(logLevel, message(logLevel));
+        comparison(logLevel);
     }
 
     @Test
@@ -88,10 +88,10 @@ class CinemaApplicationTests {
     void fatalLog() {
         String logLevel = FATAL_LEVEL;
         LOGGER.fatal(message(logLevel));
-        comparison(logLevel, message(logLevel));
+        comparison(logLevel);
     }
 
-    private void comparison(String logLevel, String message) {
+    private void comparison(String logLevel) {
         String logFile = LOG_PATH + LocalDate.now() +
                 ((logLevel.equalsIgnoreCase(ERROR_LEVEL) || logLevel.equalsIgnoreCase(FATAL_LEVEL)) ? LOG_FILE_ERROR : LOG_FILE_INFO);
         timeForLoggerToWriteLog();
@@ -102,7 +102,7 @@ class CinemaApplicationTests {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        assertTrue(lines.stream().anyMatch(line -> line.contains(message)));
+        assertTrue(lines.stream().anyMatch(line -> line.contains(message(logLevel))));
     }
 
     private void timeForLoggerToWriteLog() {
