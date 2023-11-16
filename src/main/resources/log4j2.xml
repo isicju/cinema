@@ -3,7 +3,7 @@
 
     <Properties>
         <Property name="logPath">src/main/resources/log</Property>
-        <property name="filePattern">${date:yyyy-MM-dd}</property>
+        <Property name="filePattern">${date:yyyy-MM-dd}</Property>
     </Properties>
 
     <Appenders>
