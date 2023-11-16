@@ -1,0 +1,44 @@
+version: '2.2'
+
+services:
+  postgres_prod:
+    image: postgres
+    container_name: postgres_prod
+    environment:
+      POSTGRES_PASSWORD: S_56fji-SRVJL21sxdmfv90E
+    ports:
+      - "5432:5432"
+    cpu_period: 100000
+    cpu_quota: 50000
+    mem_limit: 512m
+    restart: always
+    volumes:
+      - ./hello_world_schema.sql:/docker-entrypoint-initdb.d/hello_world_schema.sql
+
+  postgres_dev_1:
+    image: postgres
+    container_name: postgres_dev_1
+    environment:
+      POSTGRES_PASSWORD: 19WTvb67SggaWe12Gft77
+    ports:
+      - "5433:5432"
+    cpu_period: 100000
+    cpu_quota: 25000
+    mem_limit: 512m
+    restart: always
+    volumes:
+      - ./hello_world_schema.sql:/docker-entrypoint-initdb.d/hello_world_schema.sql
+
+  postgres_dev_2:
+    image: postgres
+    container_name: postgres_dev_2
+    environment:
+      POSTGRES_PASSWORD: Sgdr672nGwd-87knvoeA_f
+    ports:
+      - "5434:5432"
+    cpu_period: 100000
+    cpu_quota: 25000
+    mem_limit: 512m
+    restart: always
+    volumes:
+      - ./hello_world_schema.sql:/docker-entrypoint-initdb.d/hello_world_schema.sql
