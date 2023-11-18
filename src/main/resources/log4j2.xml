@@ -4,6 +4,7 @@
     <Properties>
         <Property name="logPath">src/main/resources/log</Property>
         <Property name="filePattern">${date:yyyy-MM-dd}</Property>
+        <Property name="consolePattern">%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %p %m%n</Property>
     </Properties>
 
     <Appenders>
@@ -24,6 +25,10 @@
                 <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
             </PatternLayout>
         </File>
+
+        <Console name="console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${consolePattern}"/>
+        </Console>
     </Appenders>
 
     <Loggers>
@@ -33,6 +38,7 @@
 
         <Root level="error">
             <AppenderRef ref="errorFile"/>
+            <AppenderRef ref="console"/>
         </Root>
     </Loggers>
 

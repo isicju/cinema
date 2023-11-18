@@ -4,7 +4,6 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
@@ -32,8 +31,7 @@ class CinemaApplicationTests {
 
     @Autowired
     ApplicationContext context;
-    @Value("${log.path}")
-    private String LOG_PATH;
+    private final String LOG_PATH = "rc/main/resources/log/";
 
     private final Logger LOGGER = LogManager.getLogger(CinemaApplication.class);
     private final String TRACE_LEVEL = "TRACE";
