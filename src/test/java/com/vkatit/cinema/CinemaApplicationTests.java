@@ -1,6 +1,6 @@
 package com.vkatit.cinema;
 
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,20 +20,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.apache.logging.log4j.LogManager;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Log4j2
 @SpringBootTest
 class CinemaApplicationTests {
 
     @Autowired
     ApplicationContext context;
-    private final String LOG_PATH = "rc/main/resources/log/";
-
-    private final Logger LOGGER = LogManager.getLogger(CinemaApplication.class);
+    private final String LOG_PATH = "src/main/resources/log/";
     private final String TRACE_LEVEL = "TRACE";
     private final String DEBUG_LEVEL = "DEBUG";
     private final String INFO_LEVEL = "INFO";
@@ -56,7 +54,7 @@ class CinemaApplicationTests {
     @Test
     @DirtiesContext
     void keepLogsByDateInfo() {
-        LOGGER.info(message(INFO_LEVEL));
+        log.info(message(INFO_LEVEL));
         assertTrue(findLogFileName(LOG_FILE_INFO));
     }
 
@@ -75,7 +73,7 @@ class CinemaApplicationTests {
     @Test
     @DirtiesContext
     void keepLogsByDateError() {
-        LOGGER.error(message(ERROR_LEVEL));
+        log.error(message(ERROR_LEVEL));
         assertTrue(findLogFileName(LOG_FILE_INFO));
     }
 
@@ -92,12 +90,12 @@ class CinemaApplicationTests {
     }
 
     private void performAllLoggingLevels() {
-        LOGGER.trace(message(TRACE_LEVEL));
-        LOGGER.debug(message(DEBUG_LEVEL));
-        LOGGER.info(message(INFO_LEVEL));
-        LOGGER.warn(message(WARN_LEVEL));
-        LOGGER.error(message(ERROR_LEVEL));
-        LOGGER.fatal(message(FATAL_LEVEL));
+        log.trace(message(TRACE_LEVEL));
+        log.debug(message(DEBUG_LEVEL));
+        log.info(message(INFO_LEVEL));
+        log.warn(message(WARN_LEVEL));
+        log.error(message(ERROR_LEVEL));
+        log.fatal(message(FATAL_LEVEL));
     }
 
     private boolean findLogFileName(String filename) {
