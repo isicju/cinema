@@ -1,38 +1,37 @@
 package com.vkatit.cinema;
 
-import com.vkatit.cinema.controller.DownloadController;
-
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.test.annotation.DirtiesContext;
 
-import java.nio.file.Path;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CinemaApplicationTests {
 
 	@Autowired
 	ApplicationContext context;
 
-	@Autowired
-	private DownloadController downloadController;
-
 	@Value("${ticket.path}")
 	private String TICKET_PATH;
+
+	@Autowired
+	private TestRestTemplate restTemplate;
+
+	@LocalServerPort
+	private int port;
 
 	@Test
 	void contextLoads() {
@@ -40,31 +39,26 @@ class CinemaApplicationTests {
 	}
 
 	@Test
-	@DirtiesContext
-	public void fileDownload() {
+	public void downloadOk() throws Exception {
 		String fileName = "ticketid.pdf";
-		Path filePath = Paths.get(TICKET_PATH, fileName);
-		try {
-			Resource resource = new FileSystemResource(filePath.toFile());
-			HttpHeaders headers = new HttpHeaders();
-			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
-			headers.setContentType(MediaType.parseMediaType("application/octet-stream"));
-			ResponseEntity<Resource> response = (ResponseEntity<Resource>) downloadController.download(fileName);
-			assertEquals(HttpStatus.OK, response.getStatusCode());
-			assertEquals(resource.contentLength(), response.getHeaders().getContentLength());
-			assertEquals(headers.getContentDisposition(), response.getHeaders().getContentDisposition());
-			assertEquals(headers.getContentType(), response.getHeaders().getContentType());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		String url = url(fileName);
+		ResponseEntity<byte[]> response = restTemplate.getForEntity(url, byte[].class);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(MediaType.APPLICATION_OCTET_STREAM, response.getHeaders().getContentType());
+		assertEquals("attachment; filename=" + fileName, response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
+		assertArrayEquals(Files.readAllBytes(Paths.get(TICKET_PATH, fileName)), response.getBody());
 	}
 
 	@Test
-	@DirtiesContext
-	public void fileDownloadNotFound() {
+	public void downloadFileNotFound() {
 		String fileName = "nonExistentFile.pdf";
-		ResponseEntity<?> responseEntity = downloadController.download(fileName);
-		assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+		String url = url(fileName);
+		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+	}
+
+	private String url(String fileName) {
+		return  "http://localhost:" + port + "/api/v1/pdf/download/" + fileName;
 	}
 
 }
