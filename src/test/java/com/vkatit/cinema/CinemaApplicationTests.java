@@ -2,9 +2,9 @@ package com.vkatit.cinema;
 
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
-import com.vkatit.cinema.model.Printable;
 import com.vkatit.cinema.model.Ticket;
 import com.vkatit.cinema.model.Viewer;
+import com.vkatit.cinema.service.PDFEditor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,7 +46,7 @@ class CinemaApplicationTests {
 
     @Test
     public void getTicketPositiveTest() {
-        context.getBean(Printable.class).getTicket(ticket);
+        context.getBean(PDFEditor.class).getTicket(ticket);
         ticketText = readTheTicketTest(ticket);
         Assertions.assertTrue(checkTheDateIsNotNullTest(ticketText));
         Assertions.assertTrue(checkTheUserIsNotNullTest(ticketText));
@@ -55,7 +55,7 @@ class CinemaApplicationTests {
 
     @Test
     public void getTicketNegativeTest() {
-        context.getBean(Printable.class).getTicket(negativeTicket);
+        context.getBean(PDFEditor.class).getTicket(negativeTicket);
         ticketText = readTheTicketTest(negativeTicket);
         Assertions.assertFalse(checkTheUserIsNotNullTest(ticketText));
         Assertions.assertFalse(checkTheMovieNameIsNotNullTest(ticketText));
@@ -64,8 +64,9 @@ class CinemaApplicationTests {
     public String readTheTicketTest(Ticket ticket) {
         String text;
         try {
-            PdfReader reader = new PdfReader(generatedTicket + ticket.getSeat() + ".pdf");
+            PdfReader reader = new PdfReader(generatedTicket + "Seat" + ticket.getSeat() + ".pdf");
             text = PdfTextExtractor.getTextFromPage(reader, 1);
+            System.out.println(text);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -95,5 +96,4 @@ class CinemaApplicationTests {
         Pattern pattern = Pattern.compile(regexPattern);
         return pattern.matcher(ticketText);
     }
-
 }

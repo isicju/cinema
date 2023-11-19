@@ -15,7 +15,6 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
-import com.vkatit.cinema.model.Printable;
 import com.vkatit.cinema.model.Ticket;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,15 +26,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
-public class PDFEditor implements Printable {
+public class PDFEditor {
     @Value("${rawTicketPath}")
     private String rawTicketPath;
     @Value("${generatedTicketPath}")
     private String outputFilePath;
+    @Value("${siteAddressToPutInsideTicket}")
+    private String siteAddress;
 
     public PDFEditor(@Value("${rawTicketPath}") String rawTicketPath,
                      @Value("${generatedTicketPath}") String outputFilePath) {
@@ -43,7 +42,6 @@ public class PDFEditor implements Printable {
         this.outputFilePath = outputFilePath;
     }
 
-    @Override
     public byte[] getTicket(Ticket ticket) {
         return handleExceptionsAndReturnBytesArray(ticket);
     }
@@ -52,12 +50,10 @@ public class PDFEditor implements Printable {
     public byte[] handleExceptionsAndReturnBytesArray(Ticket ticket) {
         try {
             createDocument(ticket);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
             return getBytes(ticket);
         } catch (IOException e) {
+            System.out.println("exception occurred while trying to get ticket with seat number " + ticket.getSeat());
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -70,8 +66,8 @@ public class PDFEditor implements Printable {
     }
 
     public PdfDocument createTicketPdf(Ticket ticket) throws IOException {
-        PdfReader reader = new PdfReader(rawTicketPath + ticket.getSeat() + ".pdf");
-        PdfWriter writer = new PdfWriter(outputFilePath + ticket.getSeat() + ".pdf");
+        PdfReader reader = new PdfReader(rawTicketPath);
+        PdfWriter writer = new PdfWriter(outputFilePath + "Seat" + ticket.getSeat() + ".pdf");
         return new PdfDocument(reader, writer);
     }
 
@@ -98,32 +94,14 @@ public class PDFEditor implements Printable {
     }
 
     public void fillOutTheSite(PdfPage page, PdfFont font) {
-        Text site = new Text("powered by govnokodik.com").setFont(font);
-        getRotatedCanvas(page, site, 1300, 350);
+        Text site = new Text(siteAddress).setFont(font);
+        getRotatedCanvas(page, site);
     }
 
     public void fillOutMovieName(Ticket ticket, PdfPage page, PdfFont font) {
         Text movieName;
-        float y;
-        float fontSize;
-        if (ticket.getMovieName().length() <= 23) {
-            movieName = new Text("Film: \n " + ticket.getMovieName()).setFont(font);
-            y = 160;
-            fontSize = 40;
-        } else {
-            List<String> movieNameParts = new ArrayList<>(List.of(ticket.getMovieName().split(" ")));
-            StringBuilder builtString = new StringBuilder();
-            for (String movieNamePart : movieNameParts) {
-                builtString.append(movieNamePart).append(" ");
-                if (builtString.length() > 23) {
-                    builtString.append("\n");
-                }
-            }
-            movieName = new Text("Film: \n " + builtString).setFont(font);
-            y = 144;
-            fontSize = 30;
-        }
-        getNormalCanvas(page, movieName, 1370, y, fontSize);
+        movieName = new Text("Film: \n " + ticket.getMovieName()).setFont(font);
+        getNormalCanvas(page, movieName, 1370, 160, 40);
     }
 
     public void fillOutViewerName(Ticket ticket, PdfPage page, PdfFont font) {
@@ -143,13 +121,14 @@ public class PDFEditor implements Printable {
         canvas.showTextAligned(paragraph, x, y, TextAlignment.LEFT);
     }
 
-    private void getRotatedCanvas(PdfPage page, Text text, float x, float y) {
+    private void getRotatedCanvas(PdfPage page, Text text) {
         Canvas canvas = new Canvas(page, PageSize.A5);
-        canvas.showTextAligned(text.setFontSize(33).getText().toUpperCase(), x, y, TextAlignment.CENTER, VerticalAlignment.MIDDLE, 7.85F);
+        canvas.showTextAligned(text.setFontSize(33).getText().toUpperCase(),
+                1300F, 350F, TextAlignment.CENTER, VerticalAlignment.MIDDLE, 7.85F);
     }
 
     public byte[] getBytes(Ticket ticket) throws IOException {
-        Path filePath = Paths.get(outputFilePath + ticket.getSeat() + ".pdf");
+        Path filePath = Paths.get(outputFilePath + "Seat" + ticket.getSeat() + ".pdf");
         byte[] bytes;
         bytes = Files.readAllBytes(filePath);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
