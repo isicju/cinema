@@ -7,6 +7,7 @@ import com.vkatit.cinema.model.Viewer;
 import com.vkatit.cinema.service.PDFEditor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
@@ -21,14 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 class CinemaApplicationTests {
+    @Autowired
     ApplicationContext context;
     private String ticketText;
     @Value("${generatedTicketPath}")
     private String generatedTicket;
-
-    public CinemaApplicationTests(ApplicationContext context) {
-        this.context = context;
-    }
 
     private final Ticket ticket = new Ticket(LocalDateTime.now(),
             (int) ((Math.random() * 50) + 1),
@@ -46,7 +44,7 @@ class CinemaApplicationTests {
 
     @Test
     public void getTicketPositiveTest() {
-        context.getBean(PDFEditor.class).getTicket(ticket);
+        context.getBean(PDFEditor.class).passTheTicket(ticket);
         ticketText = readTheTicketAndReturnString(ticket);
         Assertions.assertTrue(isDateFilledUp(ticketText));
         Assertions.assertTrue(isUserNameFilledUp(ticketText));
@@ -55,7 +53,7 @@ class CinemaApplicationTests {
 
     @Test
     public void getTicketNegativeTest() {
-        context.getBean(PDFEditor.class).getTicket(negativeTicket);
+        context.getBean(PDFEditor.class).passTheTicket(negativeTicket);
         ticketText = readTheTicketAndReturnString(negativeTicket);
         Assertions.assertFalse(isUserNameFilledUp(ticketText));
         Assertions.assertFalse(isMovieNameFilledUp(ticketText));

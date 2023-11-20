@@ -41,12 +41,12 @@ public class PDFEditor {
         this.outputFilePath = outputFilePath;
     }
 
-    public byte[] getTicket(Ticket ticket) {
+    public byte[] passTheTicket(Ticket ticket) {
         return handleExceptionsAndReturnBytesArray(ticket);
     }
 
     @ExceptionHandler
-    public byte[] handleExceptionsAndReturnBytesArray(Ticket ticket) {
+    private byte[] handleExceptionsAndReturnBytesArray(Ticket ticket) {
         try {
             createDocument(ticket);
             return getBytes(ticket);
@@ -57,20 +57,20 @@ public class PDFEditor {
         }
     }
 
-    public void createDocument(Ticket ticket) throws IOException {
+    private void createDocument(Ticket ticket) throws IOException {
         PdfDocument pdfDocument = createTicketPdf(ticket);
         fillOutTheFieldsOfTicket(new Document(pdfDocument), ticket);
         pdfDocument.close();
         getBytes(ticket);
     }
 
-    public PdfDocument createTicketPdf(Ticket ticket) throws IOException {
+    private PdfDocument createTicketPdf(Ticket ticket) throws IOException {
         PdfReader reader = new PdfReader(rawTicketPath);
         PdfWriter writer = new PdfWriter(outputFilePath + "Seat" + ticket.getSeat() + ".pdf");
         return new PdfDocument(reader, writer);
     }
 
-    public void fillOutTheFieldsOfTicket(Document document, Ticket ticket) throws IOException {
+    private void fillOutTheFieldsOfTicket(Document document, Ticket ticket) throws IOException {
         PdfFont timesRomanFont;
         timesRomanFont = PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN);
         PdfPage page = document.getPdfDocument().getPage(1);
@@ -82,33 +82,32 @@ public class PDFEditor {
         fillOutViewerLastName(ticket, page, timesRomanFont);
     }
 
-    public void fillOutTheDate(Ticket ticket, PdfPage page, PdfFont font) {
+    private void fillOutTheDate(Ticket ticket, PdfPage page, PdfFont font) {
         Text date = new Text(ticket.getDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))).setFont(font);
         getNormalCanvas(page, date, 295, 144, 43);
     }
 
-    public void fillOutTheSeat(Ticket ticket, PdfPage page, PdfFont font) {
+    private void fillOutTheSeat(Ticket ticket, PdfPage page, PdfFont font) {
         Text seat = new Text(String.valueOf(ticket.getSeat())).setFont(font);
         getNormalCanvas(page, seat, 295, 76, 43);
     }
 
-    public void fillOutTheSite(PdfPage page, PdfFont font) {
+    private void fillOutTheSite(PdfPage page, PdfFont font) {
         Text site = new Text(siteAddress).setFont(font);
         getRotatedCanvas(page, site);
     }
 
-    public void fillOutMovieName(Ticket ticket, PdfPage page, PdfFont font) {
-        Text movieName;
-        movieName = new Text("Film: \n " + ticket.getMovieName()).setFont(font);
+    private void fillOutMovieName(Ticket ticket, PdfPage page, PdfFont font) {
+        Text movieName = new Text("Film: \n " + ticket.getMovieName()).setFont(font);
         getNormalCanvas(page, movieName, 1370, 160, 40);
     }
 
-    public void fillOutViewerName(Ticket ticket, PdfPage page, PdfFont font) {
+    private void fillOutViewerName(Ticket ticket, PdfPage page, PdfFont font) {
         Text viewerName = new Text("Name: " + ticket.getViewer().getFirstName()).setFont(font);
         getNormalCanvas(page, viewerName, 1370, 500, 43);
     }
 
-    public void fillOutViewerLastName(Ticket ticket, PdfPage page, PdfFont font) {
+    private void fillOutViewerLastName(Ticket ticket, PdfPage page, PdfFont font) {
         Text viewerLastName = new Text("Last Name: " + ticket.getViewer().getLastName()).setFont(font);
         getNormalCanvas(page, viewerLastName, 1370, 450, 43);
     }
@@ -116,17 +115,15 @@ public class PDFEditor {
 
     private void getNormalCanvas(PdfPage page, Text text, float x, float y, float fontSize) {
         Paragraph paragraph = new Paragraph().setFontSize(fontSize).add(text);
-        Canvas canvas = new Canvas(page, PageSize.A5);
-        canvas.showTextAligned(paragraph, x, y, TextAlignment.LEFT);
+        new Canvas(page, PageSize.A5).showTextAligned(paragraph, x, y, TextAlignment.LEFT);
     }
 
     private void getRotatedCanvas(PdfPage page, Text text) {
-        Canvas canvas = new Canvas(page, PageSize.A5);
-        canvas.showTextAligned(text.setFontSize(33).getText().toUpperCase(),
+        new Canvas(page, PageSize.A5).showTextAligned(text.setFontSize(33).getText().toUpperCase(),
                 1300F, 350F, TextAlignment.CENTER, VerticalAlignment.MIDDLE, 7.85F);
     }
 
-    public byte[] getBytes(Ticket ticket) throws IOException {
+    private byte[] getBytes(Ticket ticket) throws IOException {
         Path filePath = Paths.get(outputFilePath + "Seat" + ticket.getSeat() + ".pdf");
         byte[] bytes;
         bytes = Files.readAllBytes(filePath);
