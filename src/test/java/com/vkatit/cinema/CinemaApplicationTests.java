@@ -43,7 +43,7 @@ class CinemaApplicationTests {
     }
 
     @Test
-    public void getTicketPositiveTest() {
+    public void passTicketPositiveTest() {
         context.getBean(PDFEditor.class).passTheTicket(ticket);
         ticketText = readTheTicketAndReturnString(ticket);
         Assertions.assertTrue(isDateFilledUp(ticketText));
@@ -52,7 +52,7 @@ class CinemaApplicationTests {
     }
 
     @Test
-    public void getTicketNegativeTest() {
+    public void passTicketNegativeTest() {
         context.getBean(PDFEditor.class).passTheTicket(negativeTicket);
         ticketText = readTheTicketAndReturnString(negativeTicket);
         Assertions.assertFalse(isUserNameFilledUp(ticketText));
