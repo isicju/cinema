@@ -20,18 +20,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.springframework.test.annotation.DirtiesContext;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @Log4j2
 @SpringBootTest
 class CinemaApplicationTests {
 
+    static {
+        System.setProperty("tempLogPath", System.getProperty("java.io.tmpdir"));
+    }
+
     @Autowired
     ApplicationContext context;
-    private final String LOG_PATH = "src/main/resources/log/";
+    private final String LOG_PATH = System.getProperty("java.io.tmpdir");
     private final String TRACE_LEVEL = "TRACE";
     private final String DEBUG_LEVEL = "DEBUG";
     private final String INFO_LEVEL = "INFO";
@@ -47,46 +51,43 @@ class CinemaApplicationTests {
     }
 
     @AfterEach
-    void cleanUp() {
-        cleanLogFiles();
+    void cleanLogFiles() throws IOException {
+        cleanFile(LOG_FILE_INFO);
+        cleanFile(LOG_FILE_ERROR);
     }
 
     @Test
-    @DirtiesContext
-    void keepLogsByDateInfo() {
+    void keepLogsByDateInfo() throws IOException {
         log.info(message(INFO_LEVEL));
-        assertTrue(findLogFileName(LOG_FILE_INFO));
+        assertThat(existFile(LOG_FILE_INFO), is(true));
     }
 
     @Test
-    @DirtiesContext
-    void infoFileIncludesAllExceptErrorAndLower() {
+    void infoFileIncludesAllExceptErrorAndLower() throws IOException {
         performAllLoggingLevels();
-        assertTrue(compareLogFileContent(TRACE_LEVEL, LOG_FILE_INFO));
-        assertTrue(compareLogFileContent(DEBUG_LEVEL, LOG_FILE_INFO));
-        assertTrue(compareLogFileContent(INFO_LEVEL, LOG_FILE_INFO));
-        assertTrue(compareLogFileContent(WARN_LEVEL, LOG_FILE_INFO));
-        assertFalse(compareLogFileContent(ERROR_LEVEL, LOG_FILE_INFO));
-        assertFalse(compareLogFileContent(FATAL_LEVEL, LOG_FILE_INFO));
+        assertThat(hasContent(TRACE_LEVEL, LOG_FILE_INFO), is(true));
+        assertThat(hasContent(DEBUG_LEVEL, LOG_FILE_INFO), is(true));
+        assertThat(hasContent(INFO_LEVEL, LOG_FILE_INFO), is(true));
+        assertThat(hasContent(WARN_LEVEL, LOG_FILE_INFO), is(true));
+        assertThat(hasContent(ERROR_LEVEL, LOG_FILE_INFO), is(false));
+        assertThat(hasContent(FATAL_LEVEL, LOG_FILE_INFO), is(false));
     }
 
     @Test
-    @DirtiesContext
-    void keepLogsByDateError() {
+    void keepLogsByDateError() throws IOException {
         log.error(message(ERROR_LEVEL));
-        assertTrue(findLogFileName(LOG_FILE_INFO));
+        assertThat(existFile(LOG_FILE_ERROR), is(true));
     }
 
     @Test
-    @DirtiesContext
-    void errorFileIncludesOnlyErrorAndLower() {
+    void errorFileIncludesOnlyErrorAndLower() throws IOException {
         performAllLoggingLevels();
-        assertFalse(compareLogFileContent(TRACE_LEVEL, LOG_FILE_ERROR));
-        assertFalse(compareLogFileContent(DEBUG_LEVEL, LOG_FILE_ERROR));
-        assertFalse(compareLogFileContent(INFO_LEVEL, LOG_FILE_ERROR));
-        assertFalse(compareLogFileContent(WARN_LEVEL, LOG_FILE_ERROR));
-        assertTrue(compareLogFileContent(ERROR_LEVEL, LOG_FILE_ERROR));
-        assertTrue(compareLogFileContent(FATAL_LEVEL, LOG_FILE_ERROR));
+        assertThat(hasContent(TRACE_LEVEL, LOG_FILE_ERROR), is(false));
+        assertThat(hasContent(DEBUG_LEVEL, LOG_FILE_ERROR), is(false));
+        assertThat(hasContent(INFO_LEVEL, LOG_FILE_ERROR), is(false));
+        assertThat(hasContent(WARN_LEVEL, LOG_FILE_ERROR), is(false));
+        assertThat(hasContent(ERROR_LEVEL, LOG_FILE_ERROR), is(true));
+        assertThat(hasContent(FATAL_LEVEL, LOG_FILE_ERROR), is(true));
     }
 
     private void performAllLoggingLevels() {
@@ -98,61 +99,33 @@ class CinemaApplicationTests {
         log.fatal(message(FATAL_LEVEL));
     }
 
-    private boolean findLogFileName(String filename) {
+    private boolean existFile(String filename) throws IOException {
         try (Stream<Path> walkStream = Files.walk(Paths.get(LOG_PATH), Integer.MAX_VALUE, FileVisitOption.FOLLOW_LINKS)) {
             Optional<Path> logFile = walkStream
                     .filter(path -> path.getFileName().toString().equals(filename))
                     .findFirst();
             return logFile.isPresent();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
         }
     }
 
-    private boolean compareLogFileContent(String logLevel, String logFileName) {
+    private boolean hasContent(String logLevel, String logFileName) throws IOException {
         String logFileFullPath = LOG_PATH + logFileName;
-        timeForLoggerToWriteLog();
         Path path = Paths.get(logFileFullPath);
         List<String> lines;
-        try {
-            lines = Files.readAllLines(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+        lines = Files.readAllLines(path);
         return lines.stream().anyMatch(line -> line.contains(message(logLevel)));
-    }
-
-    private void timeForLoggerToWriteLog() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     private String message(String logLevel) {
         return logLevel + " message";
     }
 
-    public void cleanLogFiles() {
-        cleanSpecificFile(LOG_FILE_INFO);
-        cleanSpecificFile(LOG_FILE_ERROR);
-
-    }
-
-    public void cleanSpecificFile(String logFileName) {
-        String logFilePath = LOG_PATH + logFileName;
-        File logFile = new File(logFilePath);
+    public void cleanFile(String fileName) throws IOException {
+        File logFile = new File(LOG_PATH + fileName);
         if (logFile.exists()) {
             try (FileWriter fileWriter = new FileWriter(logFile, false)) {
                 fileWriter.write("");
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-        } else {
-            System.out.println("The '" + logFilePath + "' file doesn't exist");
         }
     }
 
