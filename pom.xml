@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.vkatit</groupId>
 	<artifactId>cinema</artifactId>
-	<version>0.0.1-SNAPSHOT-17-Booking-fixed-v2</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<name>cinema</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
