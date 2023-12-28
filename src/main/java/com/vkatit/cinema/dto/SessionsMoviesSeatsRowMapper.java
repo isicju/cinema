@@ -13,13 +13,13 @@ public class SessionsMoviesSeatsRowMapper implements RowMapper<SessionsMoviesSea
     @Override
     public SessionsMoviesSeatsDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         SessionsMoviesSeatsDTO dto = new SessionsMoviesSeatsDTO();
-        dto.setMovie_id(rs.getInt("movie_id"));
-        dto.setSession_id(rs.getInt("session_id"));
-        dto.setSession_time(rs.getTime("session_time").toLocalTime());
-        dto.setSession_date(rs.getTimestamp("session_date").toLocalDateTime().toLocalDate());
-        dto.setMovie_title(rs.getString("movie_title"));
+        dto.setMovieId(rs.getInt("movie_id"));
+        dto.setSessionId(rs.getInt("session_id"));
+        dto.setSessionTime(rs.getTime("session_time").toLocalTime());
+        dto.setSessionDate(rs.getTimestamp("session_date").toLocalDateTime().toLocalDate());
+        dto.setMovieTitle(rs.getString("movie_title"));
         Array pgArray = rs.getArray("occupied_seats");
-        dto.setOccupied_seats(pgArray != null ? Arrays.asList((Integer[]) pgArray.getArray()) : Collections.emptyList());
+        dto.setOccupiedSeats(pgArray != null ? Arrays.asList((Integer[]) pgArray.getArray()) : Collections.emptyList());
         return dto;
     }
 

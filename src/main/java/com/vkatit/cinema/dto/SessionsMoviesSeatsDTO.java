@@ -1,5 +1,6 @@
 package com.vkatit.cinema.dto;
 
+import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -9,11 +10,17 @@ import java.util.List;
 @Data
 public class SessionsMoviesSeatsDTO {
 
-    private int movie_id;
-    private int session_id;
-    private LocalTime session_time;
-    private LocalDate session_date;
-    private String movie_title;
-    private List<Integer> occupied_seats;
+    @Column(name = "movie_id")
+    private int movieId;
+    @Column(name = "session_id")
+    private int sessionId;
+    @Column(name = "session_time")
+    private LocalTime sessionTime;
+    @Column(name = "session_date")
+    private LocalDate sessionDate;
+    @Column(name = "movie_title")
+    private String movieTitle;
+    @Column(name = "occupied_seats")
+    private List<Integer> occupiedSeats;
 
 }

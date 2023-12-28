@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @TestPropertySource(locations = "classpath:application-test.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(OrderAnnotation.class)
-public class BookingServiceTest {
+class BookingServiceTest {
 
     @LocalServerPort
     private int port;
@@ -63,12 +63,12 @@ public class BookingServiceTest {
                 null,
                 responseType);
         assertThat(responseEntity.getStatusCode(), Matchers.is(HttpStatus.OK));
-        assertThat(responseEntity.getBody().get(0).getMovie_id(), Matchers.is(1));
-        assertThat(responseEntity.getBody().get(0).getSession_id(), Matchers.is(1));
-        assertThat(responseEntity.getBody().get(0).getSession_date(), Matchers.is(LocalDate.of(2023, 1, 1)));
-        assertThat(responseEntity.getBody().get(0).getSession_time(), Matchers.is(LocalTime.of(10, 0)));
-        assertThat(responseEntity.getBody().get(0).getMovie_title(), Matchers.is("Movie"));
-        assertThat(responseEntity.getBody().get(0).getOccupied_seats(), Matchers.is(List.of(1)));
+        assertThat(responseEntity.getBody().get(0).getMovieId(), Matchers.is(1));
+        assertThat(responseEntity.getBody().get(0).getSessionId(), Matchers.is(1));
+        assertThat(responseEntity.getBody().get(0).getSessionDate(), Matchers.is(LocalDate.of(2023, 1, 1)));
+        assertThat(responseEntity.getBody().get(0).getSessionTime(), Matchers.is(LocalTime.of(10, 0)));
+        assertThat(responseEntity.getBody().get(0).getMovieTitle(), Matchers.is("Movie"));
+        assertThat(responseEntity.getBody().get(0).getOccupiedSeats(), Matchers.is(List.of(1)));
     }
 
     @Test

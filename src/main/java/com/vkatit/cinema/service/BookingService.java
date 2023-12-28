@@ -26,12 +26,7 @@ public class BookingService {
             @Value("${sql.file.path}") String sqlFilePath,
             BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
-        try {
-            this.sqlQueries = loadQueries(sqlFilePath);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        this.sqlQueries = loadQueries(sqlFilePath);
     }
 
     public List<SessionsMoviesSeatsDTO> fetchData() {
@@ -46,10 +41,10 @@ public class BookingService {
         try {
             Resource resource = new ClassPathResource(fileName);
             InputStream inputStream = resource.getInputStream();
-            String SqlQueries = new BufferedReader(new InputStreamReader(inputStream))
+            String fileContent  = new BufferedReader(new InputStreamReader(inputStream))
                     .lines().collect(Collectors.joining("\n"));
             Yaml yaml = new Yaml();
-            return yaml.load(SqlQueries);
+            return yaml.load(fileContent );
         } catch (IOException e) {
             throw new RuntimeException("Error loading SQL queries from file: " + fileName, e);
         }
