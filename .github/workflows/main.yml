@@ -1,0 +1,22 @@
+name: send_any_push_to_sonarqube
+
+on: push
+
+jobs:
+  send_to_sonarqube:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: checkout_code
+        uses: actions/checkout@v3
+
+      - name: set_up_java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: send_to_sonarqube
+        run: |
+          mvn sonar:sonar -Dsonar.projectKey="cinema" -Dsonar.projectName="cinema" -Dsonar.host.url=http://31.220.85.178:9001 -Dsonar.login=sqp_7d7c316ed5f26b7a6da51ebca3fdab41f5cb9ec2
