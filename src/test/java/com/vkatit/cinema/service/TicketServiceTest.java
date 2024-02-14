@@ -1,6 +1,6 @@
 package com.vkatit.cinema.service;
 
-import com.vkatit.cinema.dto.PdfDTO;
+import com.vkatit.cinema.dto.Ticket;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Testcontainers
 @TestPropertySource(locations = "classpath:application-test.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class PdfServiceTest {
+class TicketServiceTest {
 
     @LocalServerPort
     private int port;
@@ -46,22 +45,20 @@ public class PdfServiceTest {
     @Test
     @DisplayName("MANUAL Test for retrieving ticket - 200 OK")
     void getTicketOkManualTest() {
-        System.out.println(port);
-        ResponseEntity<PdfDTO> responseEntity = restTemplate.getForEntity(
-                "http://localhost:" + port + "/pdf/1",
+        ResponseEntity<Ticket> responseEntity = restTemplate.getForEntity(
+                "http://localhost:" + port + "/ticket/1",
                 null,
-                PdfDTO.class);
+                Ticket.class);
         assertThat(responseEntity.getStatusCode(), Matchers.is(HttpStatus.OK));
     }
 
     @Test
     @DisplayName("Test for retrieving ticket - 204 NO CONTENT")
     void getTicketError() {
-        System.out.println(port);
-        ResponseEntity<PdfDTO> responseEntity = restTemplate.getForEntity(
-                "http://localhost:" + port + "/pdf/2",
+        ResponseEntity<Ticket> responseEntity = restTemplate.getForEntity(
+                "http://localhost:" + port + "/ticket/2",
                 null,
-                PdfDTO.class);
+                Ticket.class);
         assertThat(responseEntity.getStatusCode(), Matchers.is(HttpStatus.NO_CONTENT));
     }
 

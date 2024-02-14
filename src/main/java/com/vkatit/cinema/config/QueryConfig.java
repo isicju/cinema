@@ -20,21 +20,17 @@ public class QueryConfig {
 
     private final Map<String, String> sqlQueries;
 
-    public QueryConfig(@Value("${sql.file.path}") String sqlFilePath) {
+    public QueryConfig(@Value("${sql.file.path}") String sqlFilePath) throws IOException {
         this.sqlQueries = loadQueries(sqlFilePath);
     }
 
-    private Map<String, String> loadQueries(String fileName) {
-        try {
-            Resource resource = new ClassPathResource(fileName);
-            InputStream inputStream = resource.getInputStream();
-            String fileContent = new BufferedReader(new InputStreamReader(inputStream))
-                    .lines().collect(Collectors.joining("\n"));
-            Yaml yaml = new Yaml();
-            return yaml.load(fileContent);
-        } catch (IOException e) {
-            throw new RuntimeException("Error loading SQL queries from file: " + fileName, e);
-        }
+    private Map<String, String> loadQueries(String fileName) throws IOException {
+        Resource resource = new ClassPathResource(fileName);
+        InputStream inputStream = resource.getInputStream();
+        String fileContent = new BufferedReader(new InputStreamReader(inputStream))
+                .lines().collect(Collectors.joining("\n"));
+        Yaml yaml = new Yaml();
+        return yaml.load(fileContent);
     }
 
 }
