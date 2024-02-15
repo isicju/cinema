@@ -1,7 +1,7 @@
 package com.vkatit.cinema.service;
 
-import com.vkatit.cinema.dto.BookingData;
-import com.vkatit.cinema.dto.SessionsMoviesSeats;
+import com.vkatit.cinema.model.BookingData;
+import com.vkatit.cinema.model.SessionsMoviesSeats;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -68,7 +68,7 @@ class BookingServiceTest {
         ParameterizedTypeReference<List<SessionsMoviesSeats>> responseType = new ParameterizedTypeReference<>() {
         };
         ResponseEntity<List<SessionsMoviesSeats>> responseEntity = restTemplate.exchange(
-                "http://localhost:" + port + "/fetch",
+                "http://localhost:" + port + "/booking/fetch",
                 HttpMethod.GET,
                 null,
                 responseType);
@@ -93,7 +93,7 @@ class BookingServiceTest {
         bookingData.setSeatId(2);
         HttpEntity<BookingData> requestEntity = new HttpEntity<>(bookingData);
         ResponseEntity<Integer> responseEntity = restTemplate.postForEntity(
-                "http://localhost:" + port + "/booking",
+                "http://localhost:" + port + "/booking/book",
                 requestEntity,
                 Integer.class);
         assertThat(responseEntity.getStatusCode(), Matchers.is(HttpStatus.OK));

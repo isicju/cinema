@@ -6,10 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 
@@ -31,7 +27,7 @@ public class DatabaseConfig {
     }
 
     @Bean
-    public DataSource dataSource() {
+    public DataSource postgresDataBase() {
         return DataSourceBuilder
                 .create()
                 .url(url)
@@ -43,21 +39,6 @@ public class DatabaseConfig {
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
-    }
-
-    @Bean
-    public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
-        return new NamedParameterJdbcTemplate(dataSource());
-    }
-
-    @Bean
-    public PlatformTransactionManager transactionManager() {
-        return new DataSourceTransactionManager(dataSource());
-    }
-
-    @Bean
-    public TransactionTemplate transactionTemplate() {
-        return new TransactionTemplate(transactionManager());
     }
 
 }

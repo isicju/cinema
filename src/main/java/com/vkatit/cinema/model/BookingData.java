@@ -1,4 +1,4 @@
-package com.vkatit.cinema.dto;
+package com.vkatit.cinema.model;
 
 import lombok.Data;
 

@@ -1,6 +1,6 @@
 package com.vkatit.cinema.service;
 
-import com.vkatit.cinema.dto.Ticket;
+import com.vkatit.cinema.model.Ticket;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ class TicketServiceTest {
     @DisplayName("MANUAL Test for retrieving ticket - 200 OK")
     void getTicketOkManualTest() {
         ResponseEntity<Ticket> responseEntity = restTemplate.getForEntity(
-                "http://localhost:" + port + "/ticket/1",
+                "http://localhost:" + port + "/ticket/download/1",
                 null,
                 Ticket.class);
         assertThat(responseEntity.getStatusCode(), Matchers.is(HttpStatus.OK));
@@ -56,7 +56,7 @@ class TicketServiceTest {
     @DisplayName("Test for retrieving ticket - 204 NO CONTENT")
     void getTicketError() {
         ResponseEntity<Ticket> responseEntity = restTemplate.getForEntity(
-                "http://localhost:" + port + "/ticket/2",
+                "http://localhost:" + port + "/ticket/download/2",
                 null,
                 Ticket.class);
         assertThat(responseEntity.getStatusCode(), Matchers.is(HttpStatus.NO_CONTENT));

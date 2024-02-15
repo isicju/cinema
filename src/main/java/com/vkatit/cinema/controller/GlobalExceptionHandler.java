@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -22,7 +23,7 @@ public class GlobalExceptionHandler {
                 .body(createResponseStatus(httpStatus, setMessage(e, "Resource read error")));
     }
 
-    @ExceptionHandler({FileNotFoundException.class, EmptyResultDataAccessException.class, DocumentException.class})
+    @ExceptionHandler({SQLException.class, FileNotFoundException.class, EmptyResultDataAccessException.class, DocumentException.class})
     public ResponseEntity<?> handleFileNotFoundException(Exception e) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Content-Status", setMessage(e, "Resource not found"));

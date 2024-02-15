@@ -1,27 +1,22 @@
 package com.vkatit.cinema.repository;
 
-import com.vkatit.cinema.dto.Ticket;
+import com.vkatit.cinema.config.SqlQueries;
+import com.vkatit.cinema.model.Ticket;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@AllArgsConstructor
 public class TicketRepository {
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public TicketRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    }
+    private final SqlQueries sqlQueries;
+    private final JdbcTemplate jdbcTemplate;
 
-    public Ticket getTicket(String getTicketQuery, int ticketId) throws EmptyResultDataAccessException {
-        SqlParameterSource parameters = new MapSqlParameterSource("ticket_id", ticketId);
-        return namedParameterJdbcTemplate.queryForObject(
-                getTicketQuery,
-                parameters,
-                new BeanPropertyRowMapper<>(Ticket.class));
+    public Ticket getTicket(int ticketId) throws EmptyResultDataAccessException {
+        return jdbcTemplate.queryForObject(sqlQueries.GET_TICKET, BeanPropertyRowMapper.newInstance(Ticket.class), ticketId);
     }
 
 }

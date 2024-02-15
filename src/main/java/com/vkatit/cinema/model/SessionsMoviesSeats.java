@@ -1,12 +1,15 @@
-package com.vkatit.cinema.dto;
+package com.vkatit.cinema.model;
 
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class SessionsMoviesSeats {
 
     private int movieId;

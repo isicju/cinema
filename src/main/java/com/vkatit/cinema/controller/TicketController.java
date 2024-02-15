@@ -2,6 +2,7 @@ package com.vkatit.cinema.controller;
 
 import com.itextpdf.text.DocumentException;
 import com.vkatit.cinema.service.TicketService;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,18 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping
+@AllArgsConstructor
+@RequestMapping("/ticket")
 public class TicketController {
 
     private final TicketService ticketService;
 
-    public TicketController(TicketService ticketService) {
-        this.ticketService = ticketService;
-    }
-
-    @GetMapping("/ticket/{ticketId}")
-    public ResponseEntity<?> downloadTicket(@PathVariable int ticketId) throws EmptyResultDataAccessException, DocumentException {
-        byte[] pdfByteArray = ticketService.generatePdf(ticketId);
+    @GetMapping("/download/{ticketId}")
+    public ResponseEntity<byte[]> downloadTicket(@PathVariable int ticketId) throws EmptyResultDataAccessException, DocumentException {
+        byte[] pdfByteArray = ticketService.generateTicket(ticketId);
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.setContentDispositionFormData("attachment", "ticket-" + ticketId + ".pdf");
