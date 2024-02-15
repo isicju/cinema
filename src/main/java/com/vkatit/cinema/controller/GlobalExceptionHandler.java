@@ -1,5 +1,7 @@
 package com.vkatit.cinema.controller;
 
+import com.itextpdf.text.DocumentException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -8,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -17,13 +20,13 @@ public class GlobalExceptionHandler {
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         return ResponseEntity
                 .status(httpStatus)
-                .body(createResponseStatus(httpStatus, setMessage(e, "File read error")));
+                .body(createResponseStatus(httpStatus, setMessage(e, "Resource read error")));
     }
 
-    @ExceptionHandler(FileNotFoundException.class)
+    @ExceptionHandler({SQLException.class, FileNotFoundException.class, EmptyResultDataAccessException.class, DocumentException.class})
     public ResponseEntity<?> handleFileNotFoundException(Exception e) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Content-Status", setMessage(e, "File not found"));
+        headers.set("X-Content-Status", setMessage(e, "Resource not found"));
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .headers(headers)
